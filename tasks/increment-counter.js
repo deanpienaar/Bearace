@@ -25,4 +25,6 @@ async function incrementCounter () {
   });
 }
 
-incrementCounter();
+incrementCounter().catch(err => {
+  console.error(err);
+});
