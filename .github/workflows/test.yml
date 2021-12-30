@@ -16,5 +16,7 @@ jobs:
           cache: yarn
       - name: Install Deps
         run: yarn
+      - name: Lint
+        run: yarn lint
       - name: Build
         run: yarn build
