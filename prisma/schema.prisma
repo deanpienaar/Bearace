@@ -13,5 +13,5 @@ datasource db {
 model Site {
   id Int @default(autoincrement()) @id
   password String
-  lastIncident DateTime @default(now())
+  counter Int
 }
