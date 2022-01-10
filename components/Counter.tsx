@@ -1,9 +1,8 @@
-import {Alert, Snackbar} from '@mui/material';
+import {Alert, AlertColor, Snackbar} from '@mui/material';
 import {useState} from 'react';
 
 import styles from '../styles/components/Counter.module.css';
 import ResetForm from './ResetForm';
-import {AlertColor} from '@mui/material/Alert/Alert';
 
 
 interface CounterProps {
