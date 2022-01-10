@@ -4,21 +4,21 @@ import Head from 'next/head';
 import Counter from '../components/Counter';
 import styles from '../styles/Home.module.css';
 import client from '../backend/client';
-import {Site} from '../typings/Site';
+import {calculateDaysSinceLastIncident} from '../utils/calculate-days-since-last-incident';
 
 
 interface HomeProps {
-  site: Site;
+  daysSinceLastIncident: number;
 }
 
 export const getServerSideProps: GetStaticProps = async () => {
-  const site = await client.site.findUnique({where: {id: 1}});
-  return {props: {site}};
+  const {lastIncident} = await client.site.findUnique({where: {id: 1}})!;
+  const daysSinceLastIncident = calculateDaysSinceLastIncident(lastIncident);
+
+  return {props: {daysSinceLastIncident}};
 };
 
-const Home: NextPage<HomeProps> = ({site}) => {
-  const {counter} = site;
-
+const Home: NextPage<HomeProps> = ({daysSinceLastIncident}) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -32,7 +32,7 @@ const Home: NextPage<HomeProps> = ({site}) => {
           Bearace Edge Counter
         </h1>
 
-        <Counter count={counter} />
+        <Counter count={daysSinceLastIncident} />
       </main>
     </div>
   );
