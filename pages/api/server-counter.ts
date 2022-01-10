@@ -1,29 +1,30 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiRequest, NextApiResponse} from 'next';
 
-import {Site} from '../../typings/Site';
 import client from '../../backend/client';
 
 
-interface UpdateServerCounterRequest {
-  counter: number;
-}
-
-interface UpdateServerCounterResponse {
+type UpdateServerCounterResponse = '' | {
   counter: number;
 }
 
 export default async function handler (req: NextApiRequest, res: NextApiResponse<UpdateServerCounterResponse>) {
-  const {counter} = req.body;
+  const {password} = await req.body;
+  const site = await client.site.findUnique({where: {id: 1}});
 
-  const updatedSite: Site = await client.site.update({
+  if (!site || site.password !== password) {
+    res.status(401).send('');
+    return;
+  }
+
+  await client.site.update({
     where: {
       id: 1,
     },
     data: {
-      counter,
+      lastIncident: new Date(),
     },
   });
 
-  res.status(200).json({counter: updatedSite.counter});
+  res.status(200).json({counter: 0});
 }
