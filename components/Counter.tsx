@@ -9,7 +9,7 @@ export default function Counter ({count: initialCount}: CounterProps) {
   const [count, setCount] = useState(initialCount);
 
   async function updateCountBackend (newCount: number): Promise<number> {
-    const response = await fetch('/api/update-server-counter', {
+    const response = await fetch('/api/server-counter', {
       method: 'POST',
       body: JSON.stringify({counter: newCount}),
       headers: {'Content-Type': 'application/json'},
