@@ -1,3 +1,4 @@
+import {Container, Grid} from '@mui/material';
 import type {GetStaticProps, NextPage} from 'next';
 import Head from 'next/head';
 
@@ -12,7 +13,9 @@ interface HomeProps {
 }
 
 export const getServerSideProps: GetStaticProps = async () => {
-  const {lastIncident} = await client.site.findUnique({where: {id: 1}})!;
+  const site = await client.site.findUnique({where: {id: 1}});
+  const {lastIncident} = site!;
+
   const daysSinceLastIncident = calculateDaysSinceLastIncident(lastIncident);
 
   return {props: {daysSinceLastIncident}};
@@ -28,11 +31,20 @@ const Home: NextPage<HomeProps> = ({daysSinceLastIncident}) => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Bearace Edge Counter
-        </h1>
+        <Container>
+          <Grid container justifyContent="center">
+            <Grid item xs={12}>
+              <h1 className={styles.title}>
+                Bearace Edge Counter
+              </h1>
+            </Grid>
 
-        <Counter count={daysSinceLastIncident} />
+            <Grid item xs={12}>
+              <Counter count={daysSinceLastIncident} />
+            </Grid>
+          </Grid>
+
+        </Container>
       </main>
     </div>
   );
