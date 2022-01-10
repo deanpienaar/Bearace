@@ -1,4 +1,9 @@
+import {Alert, Snackbar} from '@mui/material';
 import {useState} from 'react';
+
+import styles from '../styles/components/Counter.module.css';
+import ResetForm from './ResetForm';
+import {AlertColor} from '@mui/material/Alert/Alert';
 
 
 interface CounterProps {
@@ -7,35 +12,48 @@ interface CounterProps {
 
 export default function Counter ({count: initialCount}: CounterProps) {
   const [count, setCount] = useState(initialCount);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor>('success');
 
-  async function updateCountBackend (newCount: number): Promise<number> {
+  const showMessage = (message: string, severity: AlertColor) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
+
+  const resetCount = async (password: string) => {
     const response = await fetch('/api/server-counter', {
       method: 'POST',
-      body: JSON.stringify({counter: newCount}),
+      body: JSON.stringify({password}),
       headers: {'Content-Type': 'application/json'},
     });
 
-    const {counter} = await response.json();
-
-    return counter;
-  }
-
-  async function incrementCount () {
-    const newCount = await updateCountBackend(count + 1);
-    setCount(newCount);
-  }
-
-  async function resetCount () {
-    const newCount = await updateCountBackend(0);
-    setCount(newCount);
-  }
+    try {
+      const {counter} = await response.json();
+      setCount(counter);
+      showMessage('Counter reset!', 'success');
+    } catch (err) {
+      showMessage('Invalid password!', 'warning');
+    }
+  };
 
   return (
-    <div>
-      {count}
+    <div className={styles.counter}>
+      <h2>Days Since Last Incident</h2>
+      <p>{count}</p>
       <br />
-      <button type="button" onClick={incrementCount}>Increment</button>
-      <button type="button" onClick={resetCount}>Reset</button>
+      {/* eslint-disable-next-line react/jsx-no-bind */}
+      <ResetForm handleSubmit={resetCount} />
+      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+        <Alert onClose={handleAlertClose} severity={alertSeverity} sx={{width: '100%'}}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
